@@ -1,0 +1,87 @@
+{
+	"test": {
+		"title": "ZeroMQ Test",
+		"name": "0mq",
+		"cases": {
+			"rxtx_size": [ 1024, 2048, 4096, 8192, 16384, 32768, 65536, 
+						   1048576, 2097152, 4194304, 8388608, 16777216, 33554432, 67108864, 134217728 ]
+		}
+	},
+	"application": {
+
+		"cmdline": [ "/opt/FairRoot_OFI/bin/sink" ],
+		"env": {
+			"LIBFABRIC_DIR": "/opt/libfabric-1.2.0",
+			"BASE_DIR": "/opt/FairRoot_OFI",
+			"FAIRSOFT_DIR": "/home/lalazari/fair_install/FairSoftInstall",
+			"NANOMSG_DIR": "/opt/nanomsg-0.8-ofi",
+			"LD_LIBRARY_PATH": "%(LIBFABRIC_DIR)s/lib:%(BASE_DIR)s/lib:%(FAIRSOFT_DIR)s/lib:%(NANOMSG_DIR)s/lib"
+		},
+
+		"config_arg": "--config-json-file",
+		"config": {
+			"fairMQOptions":
+			{
+				"device":
+				{
+					"id": "bsampler1",
+					"channel":
+					{
+						"name": "data-out",
+						"socket":
+						{
+							"type": "push",
+							"method": "bind",
+							"address": "ofi://%(remote_ip)s:5556",
+							"sndBufSize": "%(rxtx_size)i",
+							"rcvBufSize": "%(rxtx_size)i",
+							"rateLogging": "1"
+						}
+					}
+				},
+				"device":
+				{
+					"id": "sink1",
+					"channel":
+					{
+						"name": "data-in",
+						"socket":
+						{
+							"type": "pull",
+							"method": "connect",
+							"address": "ofi://%(local_ip)s:5556",
+							"sndBufSize": "%(rxtx_size)i",
+							"rcvBufSize": "%(rxtx_size)i",
+							"rateLogging": "1"
+						}
+					}
+				}
+			}
+		}
+
+	},
+	"machines": {
+		"local": {
+
+			"name": "alicisco1",
+			"ip": "188.184.2.34",
+
+			"application": {
+				"cmdline_append": [ "--id", "sink1" ],
+			}
+
+		},
+		"remote": [
+			{
+
+				"name": "alicisco2",
+				"ip": "188.184.2.33",
+
+				"application": {
+					"cmdline_append": [ "--id", "bsampler1" ],
+				}
+
+			}
+		]
+	}
+}

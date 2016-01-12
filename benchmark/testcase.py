@@ -1,15 +1,14 @@
 
-class Testcase:
+class TestCase:
 
-	def __init__(self, config):
+	def __init__(self, properties, localMachine, remoteMachines):
 		"""
-		Configure a test-case
+		Initialize the test case
 		"""
-		pass
 
-	def run(self):
-		"""
-		Run the test-case
-		"""
-		pass
+		# The test properties (vary between tests)
+		self.properties = properties
 
+		# Local and remote machines
+		self.localMachine = localMachine
+		self.remoteMachines = remoteMachines
