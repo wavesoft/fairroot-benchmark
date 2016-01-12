@@ -85,6 +85,10 @@ class TestRunner:
 			km['remote_%i_ip' % i] = remote_machines[i].ip
 			km['remote_%i_name' % i] = remote_machines[i].name
 
+		# Calculate some derrivatives (Allow 8 pending messages on the queue)
+		km['rxtx_size_plus'] = int(km['rxtx_size']) * 8
+		km['rxtx_size_minus'] = int(km['rxtx_size']) / 2
+
 		############################
 		# Compile environment
 		############################
@@ -214,6 +218,7 @@ class TestRunner:
 		for l in launchers:
 			print "INFO: Starting app on %s" % l.name
 			l.start()
+			time.sleep(0.5)
 
 		# Wait for head process to exit
 		print "INFO: Waiting head worker to complete"

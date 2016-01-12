@@ -43,32 +43,31 @@
 			},
 
 			"application": {
-				"exec": "/opt/FairRoot_OFI/bin/sink", 
-				"cmdline_append": [ "--id", "sink1" ],
+				"exec": "%(BASE_DIR)s/bin/bsampler", 
+				"cmdline_append": [ "--msg-size", "%(rxtx_size)i", "--id", "bsampler1" ],
 				"config": {
-
 					"fairMQOptions":
 					{
 						"device":
 						{
-							"id": "sink1",
+							"id": "bsampler1",
 							"channel":
 							{
-								"name": "data-in",
+								"name": "data-out",
 								"socket":
 								{
-									"type": "pull",
-									"method": "connect",
-									"address": "tcp://%(remote_ip)s:5556",
-									"sndBufSize": "%(rxtx_size)i",
-									"rcvBufSize": "%(rxtx_size)i",
+									"type": "push",
+									"method": "bind",
+									"address": "tcp://%(local_ip)s:%(random_port)i",
+									"sndBufSize": "%(rxtx_size_plus)i",
+									"rcvBufSize": "%(rxtx_size_plus)i",
 									"rateLogging": "1"
 								}
 							}
 						}
 					}
-
 				}
+
 			}
 
 		},
@@ -85,29 +84,31 @@
 				},
 
 				"application": {
-					"exec": "/opt/FairRoot_OFI/bin/bsampler", 
-					"cmdline_append": [ "--msg-size", "%(rxtx_size)i", "--id", "bsampler1" ],
+					"exec": "%(BASE_DIR)s/bin/sink", 
+					"cmdline_append": [ "--id", "sink1" ],
 					"config": {
+
 						"fairMQOptions":
 						{
 							"device":
 							{
-								"id": "bsampler1",
+								"id": "sink1",
 								"channel":
 								{
-									"name": "data-out",
+									"name": "data-in",
 									"socket":
 									{
-										"type": "push",
-										"method": "bind",
-										"address": "tcp://%(local_ip)s:5556",
-										"sndBufSize": "%(rxtx_size)i",
-										"rcvBufSize": "%(rxtx_size)i",
+										"type": "pull",
+										"method": "connect",
+										"address": "tcp://%(remote_ip)s:%(random_port)i",
+										"sndBufSize": "%(rxtx_size_plus)i",
+										"rcvBufSize": "%(rxtx_size_plus)i",
 										"rateLogging": "1"
 									}
 								}
 							}
 						}
+
 					}
 				}
 

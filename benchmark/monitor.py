@@ -1,7 +1,7 @@
 
 import re
 
-RE_RATE = re.compile(".*?msg \(([0-9\.]+)")
+RE_RATE = re.compile(r".*out: [0-9]+ msg \(([0-9\.]+).*")
 
 
 class TestMonitor:
@@ -47,7 +47,7 @@ class TestMonitor:
 		"""
 
 		# Handle
-		if 'data-in[0]:' in line:
+		if 'data-out[0]:' in line:
 			m = RE_RATE.match( line )
 			if m:
 				mbps = float(m.group(1))

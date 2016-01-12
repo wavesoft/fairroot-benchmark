@@ -1,4 +1,5 @@
 
+import random
 import copy
 import json
 import itertools
@@ -20,6 +21,10 @@ class TestCaseConfig:
 		self.local = local
 		self.remote = remote
 		self.values = values
+
+		# Create a random port for this test case
+		self.values['random_port'] = 3210 + random.randint(0,1024)
+
 
 	def __str__(self):
 		return "<TestCaseConfig( name=%s, values=%r, local=%s, remote=[%s] )>" % ( self.name, self.values, self.local, ",".join(map(str, self.remote)) )

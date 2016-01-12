@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import sys
+import time
 from benchmark.config import BenchmarkConfig
 from benchmark.runner import TestRunner
 from benchmark.report import TestReport
@@ -37,3 +38,9 @@ for t in tests:
 		report.log_error( r.lastError )
 	else:
 		report.log_end( results )
+
+	# Check if we should sleep
+	if 'delay' in t.config:
+		sec = int(t.config['delay'])
+		print "INFO: Sleeping for %i sec" % sec
+		time.sleep(sec)
