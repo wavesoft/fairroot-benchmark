@@ -2,6 +2,9 @@
 	"test": {
 		"title": "ZeroMQ Test",
 		"name": "0mq",
+		"metrics": [ 
+			"rate"
+		],
 		"cases": {
 			"rxtx_size": [ 1024, 2048, 4096, 8192, 16384, 32768, 65536, 
 						   1048576, 2097152, 4194304, 8388608, 16777216, 33554432, 67108864, 134217728 ]
@@ -67,7 +70,7 @@
 			"ip": "188.184.2.34",
 
 			"application": {
-				"cmdline_append": [ "--id", "sink1" ],
+				"cmdline_append": [ "--id", "sink1" ]
 			}
 
 		},
@@ -77,8 +80,11 @@
 				"name": "alicisco2",
 				"ip": "188.184.2.33",
 
+				"ssh_key": "/root/.ssh/id_rsa",
+				"ssh_user": "root",
+
 				"application": {
-					"cmdline_append": [ "--id", "bsampler1" ],
+					"cmdline_append": [ "--id", "bsampler1" ]
 				}
 
 			}

@@ -20,6 +20,9 @@ class TestCaseConfig:
 		self.local = local
 		self.remote = remote
 
+	def __str__(self):
+		return "<TestCaseConfig( name=%s, values=%r, local=%s, remote=[%s] )>" % ( self.name, self.values, self.local, ",".join(map(str, self.remote)) )
+
 class MachineConfig:
 
 	def __init__(self, name="", ip="", app={}):
@@ -60,9 +63,12 @@ class MachineConfig:
 		# Return response
 		return ans
 
+	def __str__(self):
+		return "<MachineConfig( name=%s, ip=%s )>" % (self.name, self.ip)
+
 class BenchmarkConfig:
 
-	def __init__(self):
+	def __init__(self, filename):
 		"""
 		Initialize the benchmark configuration case
 		"""
@@ -72,6 +78,10 @@ class BenchmarkConfig:
 		self.localMachine = None
 		self.remoteMachines = []
 		self.testCases = []
+		self.testConfig = {}
+
+		# Load filename
+		self.load( filename )
 
 	def parseMachineConfig(self, machine_conf):
 		"""
@@ -86,7 +96,7 @@ class BenchmarkConfig:
 			_app = machine_conf['application']
 
 			# Check for special cases
-			for k,v in _app:
+			for k,v in _app.iteritems():
 
 				# Handle merge cases
 				if k == "env":
@@ -106,8 +116,8 @@ class BenchmarkConfig:
 
 		# Create a return a MachineConfig instance
 		return MachineConfig(
-				name=conf['name'],
-				ip=conf['ip'],
+				name=machine_conf['name'],
+				ip=machine_conf['ip'],
 				app=app
 			)
 
@@ -133,12 +143,16 @@ class BenchmarkConfig:
 		keys = []
 		_test = raw['test']
 		for k,v in _test['cases'].iteritems():
-			keys.append(v)
+			keys.append(k)
 			values.append(v)
 
 		# Generate test cases as product of combinations
 		for v in itertools.product(*values):
 			self.testCases.append( dict(zip( keys, v)) )
+
+		# Keep the test config, excluding cases
+		self.testConfig = _test
+		del self.testConfig['cases']
 
 		##############################
 		# Parse application config
@@ -186,11 +200,11 @@ class BenchmarkConfig:
 		for case in self.testCases:
 
 			# Calculate a name for this test
-			name = "%s-%s" % (_test['name'], "-".join(map(str,case.values())))
+			name = "%s-%s" % (self.testConfig['name'], "-".join(map(str,case.values())))
 
 			# Create a test-case config
 			ans.append( TestCaseConfig(
-				test_config=_test, test_name=name,
+				test_config=self.testConfig, test_name=name,
 				values=case, local=self.localMachine, 
 				remote=self.remoteMachines) 
 			)
