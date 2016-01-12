@@ -34,6 +34,6 @@ for t in tests:
 
 	# Check for errors
 	if results is None:
-		report.log_error( r.getError() )
+		report.log_error( r.lastError )
 	else:
 		report.log_end( results )

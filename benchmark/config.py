@@ -1,4 +1,5 @@
 
+import copy
 import json
 import itertools
 from benchmark.testcase import TestCase
@@ -16,52 +17,28 @@ class TestCaseConfig:
 		self.name = test_name
 
 		# Keep test values
-		self.values = values
 		self.local = local
 		self.remote = remote
+		self.values = values
 
 	def __str__(self):
 		return "<TestCaseConfig( name=%s, values=%r, local=%s, remote=[%s] )>" % ( self.name, self.values, self.local, ",".join(map(str, self.remote)) )
 
 class MachineConfig:
 
-	def __init__(self, name="", ip="", app={}):
+	def __init__(self, config, name="", ip="", app={}):
 		"""
 		Machine configuration
 		"""
 
+		# Setup machine config
+		self.config = config
 		# Application configuration
-		self._app = app
+		self.app = app
 		# Machine name
 		self.name = name
 		# Machine IP
 		self.ip = ip
-
-	def env(self, test_case=None):
-		"""
-		Compile and return environment variables, with macros applied
-		"""
-
-		# Prepare response
-		ans = {}
-
-		# Update known macros with test-case values
-		km = self._env.copy()
-		if not test_case is None:
-			km.update( test_case.values )
-
-		# Iterate over environment variables
-		for k,v in self._env.iteritems():
-			# Replace macros in the value
-			value = v
-			if '%' in value:
-				value = value % km
-			# Update env variable AND the known macros
-			ans[k] = value
-			km[k] = value
-
-		# Return response
-		return ans
 
 	def __str__(self):
 		return "<MachineConfig( name=%s, ip=%s )>" % (self.name, self.ip)
@@ -89,7 +66,7 @@ class BenchmarkConfig:
 		"""
 
 		# Prepare local copy of the config
-		app = self.application.copy()
+		app = copy.deepcopy( self.application )
 
 		# Prepare application variables
 		if 'application' in machine_conf:
@@ -116,6 +93,7 @@ class BenchmarkConfig:
 
 		# Create a return a MachineConfig instance
 		return MachineConfig(
+				config=machine_conf,
 				name=machine_conf['name'],
 				ip=machine_conf['ip'],
 				app=app

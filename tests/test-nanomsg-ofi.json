@@ -1,7 +1,7 @@
 {
 	"test": {
-		"title": "ZeroMQ Test",
-		"name": "0mq",
+		"title": "NanoMSG Test, using OFI Transport",
+		"name": "nanomsg-ofi",
 		"max-samples": 30,
 		"metrics": [ 
 			"min", "max", "average"
@@ -11,7 +11,7 @@
 						   1048576, 2097152, 4194304, 8388608, 16777216, 33554432, 67108864, 134217728 ]
 		},
 		"globals": {
-			"num-msgs": 500000
+			"num-msgs": 0
 		}
 	},
 	"application": {
@@ -59,7 +59,7 @@
 								{
 									"type": "pull",
 									"method": "connect",
-									"address": "tcp://%(remote_ip)s:5556",
+									"address": "ofi://%(remote_ip)s:5556",
 									"sndBufSize": "%(rxtx_size)i",
 									"rcvBufSize": "%(rxtx_size)i",
 									"rateLogging": "1"
@@ -100,7 +100,7 @@
 									{
 										"type": "push",
 										"method": "bind",
-										"address": "tcp://%(local_ip)s:5556",
+										"address": "ofi://%(local_ip)s:5556",
 										"sndBufSize": "%(rxtx_size)i",
 										"rcvBufSize": "%(rxtx_size)i",
 										"rateLogging": "1"

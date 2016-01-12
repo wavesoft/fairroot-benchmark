@@ -1,7 +1,7 @@
 {
 	"test": {
-		"title": "ZeroMQ Test",
-		"name": "0mq",
+		"title": "NanoMSG Test, using TCP Transport",
+		"name": "nanomsg-tcp",
 		"max-samples": 30,
 		"metrics": [ 
 			"min", "max", "average"
