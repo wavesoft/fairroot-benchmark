@@ -86,8 +86,11 @@ class TestRunner:
 			km['remote_%i_name' % i] = remote_machines[i].name
 
 		# Calculate some derrivatives (Allow 8 pending messages on the queue)
-		km['rxtx_size_plus'] = int(km['rxtx_size']) * 8
-		km['rxtx_size_minus'] = int(km['rxtx_size']) / 2
+		mul = 1
+		if 'queue-size' in self.testCase.config['globals']:
+			mul = int(self.testCase.config['globals']['queue-size'])
+		km['rxtx_size_plus'] = int(km['rxtx_size']) * mul
+		km['rxtx_size_minus'] = int(km['rxtx_size']) / mul
 
 		############################
 		# Compile environment
@@ -223,6 +226,7 @@ class TestRunner:
 		# Wait for head process to exit
 		print "INFO: Waiting head worker to complete"
 		launchers[0].join()
+		print "INFO: Head worker completed"
 
 		# Wait 5 seconds for other threads to exit
 		hasAlive = True
@@ -242,6 +246,7 @@ class TestRunner:
 					launchers[i].interrupt()
 
 		# Join all threads
+		print "INFO: Joining remaining workers"
 		for i in range(1,len(launchers)):
 			if launchers[i].poll() is None:
 				launchers[i].join()

@@ -3,6 +3,7 @@
 		"title": "NanoMSG Test, using TCP Transport",
 		"name": "nanomsg-tcp",
 		"max-samples": 30,
+		"delay": 10,
 		"metrics": [ 
 			"min", "max", "average"
 		],
@@ -11,7 +12,9 @@
 						   1048576, 2097152, 4194304, 8388608, 16777216, 33554432, 67108864, 134217728 ]
 		},
 		"globals": {
-			"num-msgs": 500000
+			"num-msgs": 0,
+			"queue-size": 16,
+			"port": 5550
 		}
 	},
 	"application": {
@@ -20,12 +23,12 @@
 			"LIBFABRIC_DIR": "/opt/libfabric-1.2.0",
 			"BASE_DIR": "/opt/FairRoot_OFI",
 			"FAIRSOFT_DIR": "/home/lalazari/fair_install/FairSoftInstall",
-			"NANOMSG_DIR": "/opt/nanomsg-0.8-ofi",
+			"NANOMSG_DIR": "/opt/nanomsg-master-ofi",
 			"LD_LIBRARY_PATH": "%(LIBFABRIC_DIR)s/lib:%(BASE_DIR)s/lib:%(FAIRSOFT_DIR)s/lib:%(NANOMSG_DIR)s/lib"
 		},
 
 		"exec": "",
-		"cmdline": [ "--num-msgs", "%(num-msgs)i" ],
+		"cmdline": [ "--num-msgs", "%(num-msgs)i", "--io-threads", "24" ],
 		"config_arg": "--config-json-file",
 		"config": { }
 
@@ -58,7 +61,7 @@
 								{
 									"type": "push",
 									"method": "bind",
-									"address": "tcp://%(local_ip)s:%(random_port)i",
+									"address": "tcp://%(local_ip)s:%(port)i",
 									"sndBufSize": "%(rxtx_size_plus)i",
 									"rcvBufSize": "%(rxtx_size_plus)i",
 									"rateLogging": "1"
@@ -67,7 +70,6 @@
 						}
 					}
 				}
-
 			}
 
 		},
@@ -100,7 +102,7 @@
 									{
 										"type": "pull",
 										"method": "connect",
-										"address": "tcp://%(remote_ip)s:%(random_port)i",
+										"address": "tcp://%(remote_ip)s:%(port)i",
 										"sndBufSize": "%(rxtx_size_plus)i",
 										"rcvBufSize": "%(rxtx_size_plus)i",
 										"rateLogging": "1"

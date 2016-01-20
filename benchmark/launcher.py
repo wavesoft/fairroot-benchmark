@@ -44,6 +44,7 @@ class TestLauncher(Thread):
 		"""
 
 		# Open process
+		print "INFO: %s started" % self.name
 		self.proc = proc = Popen( self.cmdline, stdin=PIPE, stdout=PIPE, stderr=PIPE )
 		sentSIGINT = False
 
@@ -60,7 +61,7 @@ class TestLauncher(Thread):
 				self.monitor.process( line.strip() )
 
 				# If we have enough data, kill process
-				if self.monitor.enoughData and not sentSIGINT:
+				if self.monitor.exitFlag and not sentSIGINT:
 					proc.send_signal(signal.SIGINT)
 					sentSIGINT = True
 
@@ -73,13 +74,10 @@ class TestLauncher(Thread):
 		# Wait for completion
 		proc.wait()
 		ret = proc.returncode
-		print "INFO: Exited with %r" % ret
+		print "INFO: %s exited with %r" % (self.name, ret)
 
 		# Check for errors
 		if ret != 0:
 			print "~~~~~~~~~~~~~~~~~~~~~~~~"
 			print stderr
 			print "~~~~~~~~~~~~~~~~~~~~~~~~"
-
-		# Return exit code
-		return ret

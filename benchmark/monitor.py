@@ -1,7 +1,7 @@
 
 import re
 
-RE_RATE = re.compile(r".*out: [0-9]+ msg \(([0-9\.]+).*")
+RE_RATE = re.compile(r".*out: [0-9\.\+e]+ msg \(([0-9\.\+e]+).*")
 
 
 class TestMonitor:
@@ -28,7 +28,7 @@ class TestMonitor:
 		self.m_samples = []
 
 		# Flags
-		self.enoughData = False
+		self.exitFlag = False
 
 	def start(self):
 		"""
@@ -39,12 +39,13 @@ class TestMonitor:
 		self.v_samples = 0
 		self.v_sum = 0
 		self.m_samples = []
-		self.enoughData = False
+		self.exitFlag = False
 
 	def process(self, line):
 		"""
 		Process a line from stdin
 		"""
+		print line
 
 		# Handle
 		if 'data-out[0]:' in line:
@@ -70,16 +71,19 @@ class TestMonitor:
 
 				# If we have more than maximum samples, we are good
 				if (self.maxSamples > 0) and (self.v_samples >= self.maxSamples):
-					self.enoughData = True
+					self.exitFlag = True
 
-		# Read line-by-line
-		print line
+		elif 'RUNNING state finished' in line:
+			self.exitFlag = True
 
 	def close(self):
 		"""
 		Finalize reading
 		"""
-		self.v_average = self.v_sum / self.v_samples
+		if self.v_samples == 0:
+			self.v_average = 0
+		else:
+			self.v_average = self.v_sum / self.v_samples
 
 
 	def metrics(self):
