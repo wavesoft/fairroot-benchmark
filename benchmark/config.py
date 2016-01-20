@@ -3,7 +3,6 @@ import random
 import copy
 import json
 import itertools
-from benchmark.testcase import TestCase
 from collections import OrderedDict
 
 class TestCaseConfig:
