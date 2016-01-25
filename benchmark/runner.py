@@ -155,9 +155,71 @@ class TestRunner:
 
 			# Prepare environment
 			"\n".join(map(lambda kv: "export %s=%s" % kv, l_env.iteritems())),
+			
+			# Start memory monitor
+			#"function mem_mon {",
+			#"   while true; do",
+			#"   free",
+			#"free -m",
+			#"top -bn1 | grep load", 
+			#"   sleep 1",
+			#"   done",
+			#"}",
+			#"mem_mon&",
 
+
+			"function mem_monitor {",
+                 		"local MONITOR_PID=0",
+                 		"local PS_DETAILS=0",
+				"local STATUS_DETAILS=0",
+                 	"while true; do",
+                     		"MONITOR_PID=$(pidof " + l_cmdline[0] + ")",
+				"PID_NAME=$(ps -p $MONITOR_PID -o comm=)",
+				"echo " + l_cmdline[0],
+				"echo $PID_NAME",
+                     		"[ -z \"$MONITOR_PID\" ] && continue",
+                     		"local PS_DETAILS=$(ps up $MONITOR_PID | tail -n1)",
+                     		"echo PS_INFO: $PS_DETAILS",
+	
+			#Memory stats
+				"local STATUS_DETAILS=$(smem -P $PID_NAME | tail -n1)",
+				"echo STAT_INFO: $STATUS_DETAILS",
+                     		"sleep 1",
+			#Network stats
+				"local NET_STAT_RX=$(netstat -Ienp7s0f0 -e | awk 'NR==6{print $5}')",
+				"local NET_STAT_TX=$(netstat -Ienp7s0f0 -e | awk 'NR==8{print $5}')",
+				
+				"echo \"NTSTAT_RX: $NET_STAT_RX\"",
+				"echo \"NTSTAT_TX: $NET_STAT_TX\"",
+			#CPU stats
+				"local CPU_PERC=$(ps -p $MONITOR_PID -o %cpu,%mem,cmd)",
+				"echo CPU: $CPU_PERC",
+				
+				
+                 	"done",
+             		"}",
+             		"mem_monitor&",
+			"PIDS=\"$!\"",
+			 
 			# Execute command-line
-			"stdbuf -i0 -o0 -e0 " + " ".join(l_cmdline) + " $CONF"
+			"stdbuf -i0 -o0 -e0 " + " ".join(l_cmdline) + " $CONF&",
+			"APPPID=$!",
+			"PIDS=\"$PIDS $APPPID\"",
+
+			# Register a SIGINT handler
+			"function cleanup {",
+				"echo \"Killing monitor and process $PIDS\" >&2",
+				"kill -SIGINT $PIDS",
+				"sleep 1",
+				"kill $PIDS",
+				"exit 1",
+			"}",
+			"trap cleanup SIGINT SIGHUP",
+			
+			# Wait for main process to finish
+			"echo \"Waiting for main application ($APPPID) to exit\"",
+			"wait $APPPID",
+			"cleanup",
 
 		])
 
