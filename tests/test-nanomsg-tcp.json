@@ -5,7 +5,7 @@
 		"max-samples": 30,
 		"delay": 10,
 		"metrics": [ 
-			"min", "max", "average"
+			"min", "max", "average", "uss_min", "uss_max", "uss_avg", "pss_min", "pss_max", "pss_avg", "rss_min", "rss_max", "rss_avg", "rx_bytes", "tx_bytes", "cpu_average"
 		],
 		"cases": {
 			"rxtx_size": [ 1024, 2048, 4096, 8192, 16384, 32768, 65536, 
